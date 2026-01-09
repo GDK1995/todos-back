@@ -12,6 +12,8 @@ type UserRepository interface {
 	GetUserById(userId int) (models.User, error)
 	DeleteUser(userId int) error
 	GetUserByEmail(email string) (models.User, error)
+	GetUsersByGroupID(groupId int) ([]models.User, error)
+	GetUserIdsByGroupID(groupId int) ([]int, error)
 }
 
 type userRepository struct {
@@ -85,4 +87,45 @@ func (userRepository *userRepository) DeleteUser(userId int) error {
 	}
 
 	return nil
+}
+
+func (userRepository *userRepository) GetUsersByGroupID(groupId int) ([]models.User, error) {
+	users, err := userRepository.db.Query("select u.id, u.username, u.email from users u join user_groups ug on ug.user_id = u.id where ug.group_id = $1", groupId)
+	if err != nil {
+		return nil, err
+	}
+
+	userList := make([]models.User, 0)
+
+	for users.Next() {
+		var user models.User
+		errTwo := users.Scan(&user.ID, &user.Username, &user.Email)
+		if errTwo != nil {
+			return nil, errTwo
+		}
+
+		userList = append(userList, user)
+	}
+
+	return userList, nil
+}
+
+func (userRepository *userRepository) GetUserIdsByGroupID(groupId int) ([]int, error) {
+	userIds, err := userRepository.db.Query("select u.id from users u join user_groups ug on ug.user_id = u.id where ug.group_id = $1", groupId)
+	if err != nil {
+		return nil, err
+	}
+
+	ids := make([]int, 0)
+
+	for userIds.Next() {
+		var id int
+		errTwo := userIds.Scan(&id)
+		if errTwo != nil {
+			return nil, errTwo
+		}
+		ids = append(ids, id)
+	}
+
+	return ids, nil
 }

@@ -22,12 +22,12 @@ type UserGroup struct {
 }
 
 type Task struct {
-	ID          int
-	Name        string
-	Description string
-	IsDone      bool
-	Deadline    *time.Time
-	GroupId     int
+	ID          int        `json:"id"`
+	Name        string     `json:"name"`
+	Description string     `json:"description"`
+	IsDone      bool       `json:"isDone"`
+	Deadline    *time.Time `json:"deadline"`
+	GroupId     int        `json:"group_id"`
 }
 
 type TaskUser struct {

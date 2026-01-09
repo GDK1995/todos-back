@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"todo/modelsDTO"
@@ -33,8 +34,10 @@ func (userHandler *userHandler) UserHandle(w http.ResponseWriter, r *http.Reques
 
 	if r.Method == http.MethodGet {
 		userIdStr := r.URL.Query().Get("user_id")
+		groupIdStr := r.URL.Query().Get("group_id")
+		gIdStr := r.URL.Query().Get("id")
 
-		if userIdStr != "" {
+		if userIdStr != "" && groupIdStr == "" && gIdStr == "" {
 			id, err := strconv.Atoi(userIdStr)
 			if err != nil {
 				http.Error(w, "invalid user id", http.StatusBadRequest)
@@ -50,13 +53,49 @@ func (userHandler *userHandler) UserHandle(w http.ResponseWriter, r *http.Reques
 				http.Error(w, "internal error", http.StatusInternalServerError)
 				return errTwo
 			}
-			if err := json.NewEncoder(w).Encode(user); err != nil {
+			if errThree := json.NewEncoder(w).Encode(user); errThree != nil {
 				http.Error(w, "encoding error", http.StatusInternalServerError)
+				return errThree
+			}
+		} else if userIdStr == "" && groupIdStr != "" && gIdStr == "" {
+			id, err := strconv.Atoi(groupIdStr)
+			if err != nil {
+				return err
+			}
+
+			users, errTwo := userHandler.userService.GetUsersByGroupIDS(id)
+			if errTwo != nil {
+				http.Error(w, "internal error", http.StatusInternalServerError)
 				return errTwo
+			}
+
+			errThree := json.NewEncoder(w).Encode(users)
+			if errThree != nil {
+				http.Error(w, "encoding error", http.StatusInternalServerError)
+				return errThree
+			}
+		} else if userIdStr == "" && groupIdStr == "" && gIdStr != "" {
+			fmt.Println("id", gIdStr)
+			id, err := strconv.Atoi(gIdStr)
+			if err != nil {
+				return err
+			}
+
+			usersId, errTwo := userHandler.userService.GetUserIdsByGroupIdS(id)
+			if errTwo != nil {
+				http.Error(w, "internal error", http.StatusInternalServerError)
+				return errTwo
+			}
+
+			errThree := json.NewEncoder(w).Encode(usersId)
+			if errThree != nil {
+				http.Error(w, "encoding error", http.StatusInternalServerError)
+				return errThree
 			}
 		} else {
 			err := json.NewEncoder(w).Encode(userHandler.userService.GetAllUserS())
 			if err != nil {
+				http.Error(w, "invalid group id", http.StatusBadRequest)
 				return err
 			}
 		}

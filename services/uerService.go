@@ -11,6 +11,8 @@ type UserService interface {
 	GetAllUserS() []modelsDTO.UserDTO
 	GetUserByIdS(userId int) (models.User, error)
 	DeleteUserS(deleteIds modelsDTO.DeleteDTO) error
+	GetUsersByGroupIDS(groupId int) ([]modelsDTO.UserDTO, error)
+	GetUserIdsByGroupIdS(groupId int) ([]int, error)
 }
 
 type userService struct {
@@ -45,4 +47,23 @@ func (userService *userService) DeleteUserS(deleteIds modelsDTO.DeleteDTO) error
 	}
 
 	return nil
+}
+
+func (userService *userService) GetUsersByGroupIDS(groupId int) ([]modelsDTO.UserDTO, error) {
+	userList, err := userService.userRepository.GetUsersByGroupID(groupId)
+	if err != nil {
+		return nil, err
+	}
+
+	userDTOs := mappers.MapToUserDTOList(userList)
+
+	return userDTOs, nil
+}
+
+func (userService *userService) GetUserIdsByGroupIdS(groupId int) ([]int, error) {
+	ids, err := userService.userRepository.GetUserIdsByGroupID(groupId)
+	if err != nil {
+		return nil, err
+	}
+	return ids, nil
 }
