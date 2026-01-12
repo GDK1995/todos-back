@@ -17,8 +17,8 @@ type Group struct {
 }
 
 type UserGroup struct {
-	UserID  int
-	GroupID int
+	UserID  int `json:"user_id"`
+	GroupID int `json:"group_id"`
 }
 
 type Task struct {

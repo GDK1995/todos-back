@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"todo/models"
 	"todo/modelsDTO"
 	"todo/services"
 )
@@ -22,7 +23,18 @@ func NewUserGroupHandler(userGroupService services.UserGroupService) UserGroupHa
 func (userGroupHandler *userGroupHandler) UserGroupHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		var usersGroup modelsDTO.UsersGroupDTO
-		json.NewDecoder(r.Body).Decode(&usersGroup)
+		err := json.NewDecoder(r.Body).Decode(&usersGroup)
+		if err != nil {
+			return
+		}
 		userGroupHandler.userGroupService.AddUserToGroupS(usersGroup)
+	}
+	if r.Method == http.MethodDelete {
+		var userGroup models.UserGroup
+		err := json.NewDecoder(r.Body).Decode(&userGroup)
+		if err != nil {
+			return
+		}
+		userGroupHandler.userGroupService.DeleteUserFromGroupS(userGroup)
 	}
 }

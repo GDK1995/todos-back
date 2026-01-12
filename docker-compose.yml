@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: go-db-container
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Postgresql1995!
+      POSTGRES_DB: todos
+  app:
+    build: .
+    container_name: go-app-container
+    ports:
+      - "7070:7070"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=Postgresql1995!
+      - DB_NAME=todos
+    depends_on:
+      - db
+    restart: always
