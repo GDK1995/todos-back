@@ -105,6 +105,9 @@ func main() {
 	http.Handle("/task", middlewares.AuthMiddleware(
 		middlewares.ErrorMiddleware(taskHandler.TaskHandle),
 	))
+	http.Handle("/task/all", middlewares.AuthMiddleware(
+		middlewares.ErrorMiddleware(taskHandler.AllTaskHandle),
+	))
 	http.HandleFunc("/auth", authHandler.RegisterHandle)
 	http.HandleFunc("/login", middlewares.ErrorMiddleware(authHandler.LoginHandle))
 
@@ -118,6 +121,9 @@ func main() {
 	mux.HandleFunc("/user-group", userGroupHandler.UserGroupHandle)
 	mux.Handle("/task", middlewares.AuthMiddleware(
 		middlewares.ErrorMiddleware(taskHandler.TaskHandle),
+	))
+	mux.Handle("/task/all", middlewares.AuthMiddleware(
+		middlewares.ErrorMiddleware(taskHandler.AllTaskHandle),
 	))
 	mux.HandleFunc("/auth", authHandler.RegisterHandle)
 	mux.HandleFunc("/login", middlewares.ErrorMiddleware(authHandler.LoginHandle))

@@ -2,6 +2,7 @@ package services
 
 import (
 	"todo/models"
+	"todo/modelsDTO"
 	"todo/repositories"
 )
 
@@ -9,6 +10,7 @@ type TaskService interface {
 	AddTaskS(task models.Task)
 	GetTaskByGroupS(groupId int) []models.Task
 	DeleteTaskS(taskId int)
+	GetAllTaskS(userId int) []modelsDTO.TaskDTO
 }
 
 type taskService struct {
@@ -29,4 +31,8 @@ func (taskService *taskService) GetTaskByGroupS(groupId int) []models.Task {
 
 func (taskService *taskService) DeleteTaskS(taskId int) {
 	taskService.taskRepository.DeleteTask(taskId)
+}
+
+func (taskService *taskService) GetAllTaskS(userId int) []modelsDTO.TaskDTO {
+	return taskService.taskRepository.GetAllTask(userId)
 }

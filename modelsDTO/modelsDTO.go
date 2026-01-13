@@ -1,5 +1,7 @@
 package modelsDTO
 
+import "time"
+
 type UserDTO struct {
 	ID       int    `json:"id"`
 	Username string `json:"username"`
@@ -29,4 +31,14 @@ type DeleteDTO struct {
 type AuthDTO struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type TaskDTO struct {
+	ID          int        `json:"id"`
+	Name        string     `json:"name"`
+	Description string     `json:"description"`
+	IsDone      bool       `json:"isDone"`
+	Deadline    *time.Time `json:"deadline"`
+	GroupId     int        `json:"group_id"`
+	GroupName   string     `json:"group_name"`
 }

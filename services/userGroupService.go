@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"todo/models"
 	"todo/modelsDTO"
 	"todo/repositories"
@@ -24,7 +23,6 @@ func (userGroupService *userGroupService) AddUserToGroupS(usersGroup modelsDTO.U
 	ids := usersGroup.UserIDs
 	groupId := usersGroup.GroupID
 	for _, value := range ids {
-		fmt.Println(value)
 		userGroup := models.UserGroup{
 			UserID:  value,
 			GroupID: groupId,

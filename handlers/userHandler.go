@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"todo/modelsDTO"
@@ -75,7 +74,6 @@ func (userHandler *userHandler) UserHandle(w http.ResponseWriter, r *http.Reques
 				return errThree
 			}
 		} else if userIdStr == "" && groupIdStr == "" && gIdStr != "" {
-			fmt.Println("id", gIdStr)
 			id, err := strconv.Atoi(gIdStr)
 			if err != nil {
 				return err

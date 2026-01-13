@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"todo/auth"
 	"todo/mappers"
 	"todo/models"
@@ -25,7 +24,6 @@ func NewAuthService(userRepository repositories.UserRepository) AuthService {
 }
 
 func (authService *authService) RegisterUser(userDTO modelsDTO.UserAuthDTO) error {
-	fmt.Println("hash before generate:", userDTO.PasswordPlain)
 	hash, err := bcrypt.GenerateFromPassword(
 		[]byte(userDTO.PasswordPlain),
 		bcrypt.DefaultCost,
@@ -33,8 +31,6 @@ func (authService *authService) RegisterUser(userDTO modelsDTO.UserAuthDTO) erro
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("hash before saving:", string(hash))
 
 	userItem := models.User{
 		Username:     userDTO.Username,
@@ -61,7 +57,6 @@ func (authService *authService) Login(email, password string) (modelsDTO.UserDTO
 		[]byte(user.PasswordHash),
 		[]byte(password),
 	); err != nil {
-		fmt.Println(err)
 		return modelsDTO.UserDTO{}, "", auth.ErrInvalidCredentials
 	}
 

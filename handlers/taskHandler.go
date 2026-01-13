@@ -4,12 +4,15 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"todo/auth"
+	"todo/middlewares"
 	"todo/models"
 	"todo/services"
 )
 
 type TaskHandler interface {
 	TaskHandle(w http.ResponseWriter, r *http.Request) error
+	AllTaskHandle(w http.ResponseWriter, r *http.Request) error
 }
 
 type taskHandler struct {
@@ -54,6 +57,23 @@ func (taskHandler *taskHandler) TaskHandle(w http.ResponseWriter, r *http.Reques
 		taskHandler.taskService.DeleteTaskS(id)
 
 		return nil
+	}
+
+	return nil
+}
+
+func (taskHandler *taskHandler) AllTaskHandle(w http.ResponseWriter, r *http.Request) error {
+	if r.Method == http.MethodGet {
+		id, ok := middlewares.GetUserID(r)
+		if !ok {
+			return auth.ErrTokenInvalid
+		}
+
+		tasks := taskHandler.taskService.GetAllTaskS(id)
+		errTwo := json.NewEncoder(w).Encode(tasks)
+		if errTwo != nil {
+			return errTwo
+		}
 	}
 
 	return nil
