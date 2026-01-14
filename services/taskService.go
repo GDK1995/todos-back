@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"todo/models"
 	"todo/modelsDTO"
 	"todo/repositories"
