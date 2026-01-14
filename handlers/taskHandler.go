@@ -34,6 +34,16 @@ func (taskHandler *taskHandler) TaskHandle(w http.ResponseWriter, r *http.Reques
 
 		return nil
 	}
+	if r.Method == http.MethodPatch {
+		var task models.Task
+		err := json.NewDecoder(r.Body).Decode(&task)
+		if err != nil {
+			return err
+		}
+
+		taskHandler.taskService.UpdateTaskS(task)
+		return nil
+	}
 	if r.Method == http.MethodGet {
 		groupIdStr := r.URL.Query().Get("group_id")
 

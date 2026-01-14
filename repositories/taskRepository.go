@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"todo/models"
 	"todo/modelsDTO"
@@ -13,6 +12,8 @@ type TaskRepository interface {
 	GetTaskByGroup(groupId int) []models.Task
 	DeleteTask(taskId int)
 	GetAllTask(userId int) []modelsDTO.TaskDTO
+	UpdateTask(task models.Task)
+	GetTaskById(taskId int) models.Task
 }
 
 type taskRepository struct {
@@ -27,6 +28,13 @@ func (taskRepository *taskRepository) AddTask(task models.Task) {
 	_, err := taskRepository.db.Exec("insert into tasks(name, description, isdone, deadline, group_id) values($1, $2, $3, $4, $5)", task.Name, task.Description, task.IsDone, task.Deadline, task.GroupId)
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func (taskRepository *taskRepository) UpdateTask(task models.Task) {
+	_, err := taskRepository.db.Exec("update tasks set name = $1, description = $2, isdone = $3, deadline = $4, group_id = $5 where id = $6", task.Name, task.Description, task.IsDone, task.Deadline, task.GroupId, task.ID)
+	if err != nil {
+		return
 	}
 }
 
@@ -50,21 +58,11 @@ func (taskRepository *taskRepository) GetTaskByGroup(groupId int) []models.Task 
 	return taskList
 }
 
-func (taskRepository *taskRepository) DeleteTask(taskId int) {
-	_, err := taskRepository.db.Exec("delete from tasks where id = $1", taskId)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func (taskRepository *taskRepository) GetAllTask(userId int) []modelsDTO.TaskDTO {
-	fmt.Println(userId)
 	tasks, err := taskRepository.db.Query("select t.id, t.name, t.description, t.isdone, t.deadline, t.group_id, g.name from tasks t join groups g on g.id = t.group_id join user_groups ug on ug.group_id = t.group_id where user_id = $1", userId)
 	if err != nil {
 		return []modelsDTO.TaskDTO{}
 	}
-
-	fmt.Println(tasks)
 
 	taskList := make([]modelsDTO.TaskDTO, 0)
 
@@ -74,10 +72,27 @@ func (taskRepository *taskRepository) GetAllTask(userId int) []modelsDTO.TaskDTO
 		if errTwo != nil {
 			return []modelsDTO.TaskDTO{}
 		}
-
-		fmt.Println(task)
 		taskList = append(taskList, task)
 	}
 
 	return taskList
+}
+
+func (taskRepository *taskRepository) GetTaskById(taskId int) models.Task {
+	task := taskRepository.db.QueryRow("select * from tasks where id = $1", taskId)
+
+	var taskItem models.Task
+	err := task.Scan(&taskItem.ID, &taskItem.Name, &taskItem.Description, &taskItem.IsDone, &taskItem.Deadline, &taskItem.GroupId)
+	if err != nil {
+		return models.Task{}
+	}
+
+	return taskItem
+}
+
+func (taskRepository *taskRepository) DeleteTask(taskId int) {
+	_, err := taskRepository.db.Exec("delete from tasks where id = $1", taskId)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

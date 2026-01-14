@@ -13,6 +13,7 @@ import (
 type AuthService interface {
 	RegisterUser(userDTO modelsDTO.UserAuthDTO) error
 	Login(email, password string) (modelsDTO.UserDTO, string, error)
+	UpdateUserS(user modelsDTO.UserUpdateDTO) (modelsDTO.UserDTO, error)
 }
 
 type authService struct {
@@ -68,4 +69,33 @@ func (authService *authService) Login(email, password string) (modelsDTO.UserDTO
 	userDTO := mappers.MapToUserDTO(user)
 
 	return userDTO, token, nil
+}
+
+func (authService *authService) UpdateUserS(user modelsDTO.UserUpdateDTO) (modelsDTO.UserDTO, error) {
+	updateUser, err := authService.userRepository.GetUserById(user.ID)
+	if err != nil {
+		return modelsDTO.UserDTO{}, err
+	}
+
+	if user.Username != "" {
+		updateUser.Username = user.Username
+	}
+	if user.PasswordPlain != "" {
+		hash, err := bcrypt.GenerateFromPassword(
+			[]byte(user.PasswordPlain),
+			bcrypt.DefaultCost,
+		)
+		if err != nil {
+			return modelsDTO.UserDTO{}, err
+		}
+
+		updateUser.PasswordHash = string(hash)
+	}
+
+	errTwo := authService.userRepository.UpdateUser(updateUser)
+	if errTwo != nil {
+		return modelsDTO.UserDTO{}, errTwo
+	}
+
+	return mappers.MapToUserDTO(updateUser), nil
 }

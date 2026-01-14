@@ -15,6 +15,12 @@ type UserAuthDTO struct {
 	PasswordPlain string `json:"password"`
 }
 
+type UserUpdateDTO struct {
+	ID            int    `json:"id"`
+	Username      string `json:"username"`
+	PasswordPlain string `json:"password"`
+}
+
 type LoginDTO struct {
 	Email        string `json:"email"`
 	PasswordHash string `json:"password"`

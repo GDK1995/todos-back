@@ -8,6 +8,7 @@ import (
 
 type UserRepository interface {
 	AddUser(user models.User) error
+	UpdateUser(user models.User) error
 	GetAllUser() []models.User
 	GetUserById(userId int) (models.User, error)
 	DeleteUser(userId int) error
@@ -29,6 +30,15 @@ func (userRepository *userRepository) AddUser(user models.User) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (userRepository *userRepository) UpdateUser(user models.User) error {
+	_, err := userRepository.db.Exec("update users set username = $1, password_hash = $2 where id = $3", user.Username, user.PasswordHash, user.ID)
+	if err != nil {
+		return err
+	}
+	
 	return nil
 }
 

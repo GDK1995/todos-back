@@ -13,6 +13,7 @@ import (
 type AuthHandler interface {
 	RegisterHandle(w http.ResponseWriter, r *http.Request)
 	LoginHandle(w http.ResponseWriter, r *http.Request) error
+	UpdateUser(w http.ResponseWriter, r *http.Request) error
 }
 
 type authHandler struct {
@@ -70,4 +71,19 @@ func (authHandler *authHandler) LoginHandle(w http.ResponseWriter, r *http.Reque
 		Token: token,
 		User:  user,
 	})
+}
+
+func (authHandler *authHandler) UpdateUser(w http.ResponseWriter, r *http.Request) error {
+	var user modelsDTO.UserUpdateDTO
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		return err
+	}
+
+	updatedUser, errTwo := authHandler.authService.UpdateUserS(user)
+	if errTwo != nil {
+		return errTwo
+	}
+
+	return json.NewEncoder(w).Encode(updatedUser)
 }

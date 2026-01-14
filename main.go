@@ -108,6 +108,9 @@ func main() {
 	http.Handle("/task/all", middlewares.AuthMiddleware(
 		middlewares.ErrorMiddleware(taskHandler.AllTaskHandle),
 	))
+	http.Handle("/user/update", middlewares.AuthMiddleware(
+		middlewares.ErrorMiddleware(authHandler.UpdateUser),
+	))
 	http.HandleFunc("/auth", authHandler.RegisterHandle)
 	http.HandleFunc("/login", middlewares.ErrorMiddleware(authHandler.LoginHandle))
 
@@ -125,12 +128,15 @@ func main() {
 	mux.Handle("/task/all", middlewares.AuthMiddleware(
 		middlewares.ErrorMiddleware(taskHandler.AllTaskHandle),
 	))
+	mux.Handle("/user/update", middlewares.AuthMiddleware(
+		middlewares.ErrorMiddleware(authHandler.UpdateUser),
+	))
 	mux.HandleFunc("/auth", authHandler.RegisterHandle)
 	mux.HandleFunc("/login", middlewares.ErrorMiddleware(authHandler.LoginHandle))
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
 	})
